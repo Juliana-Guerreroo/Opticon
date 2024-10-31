@@ -81,6 +81,7 @@ parametros = [
         "reduce_factor": np.random.choice(
             np.arange(0.1, 0.6, 0.1)
         ),  # Factor de reducción de LR
+        "batch_size": np.random.choice(np.arange(20,101,20))
     }
     for _ in range(1)
 ]
@@ -127,6 +128,7 @@ for idx, params in enumerate(parametros):
         epochs=params["epochs"],
         validation_split=0.2,
         callbacks=[checkpoint, early_stopping, lr_reduction],
+        batch_size = params["batch_size"]
     )
 
     # Cargar el mejor modelo guardado
