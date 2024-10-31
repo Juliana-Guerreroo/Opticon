@@ -177,23 +177,25 @@ for resultado in resultados:
         f"MAE: {resultado['MAE']}, MSE: {resultado['MSE']}, RMSE: {resultado['RMSE']}"
     )
 
+
 # Define la ruta del archivo donde se guardará la salida
-ruta_archivo = f"./results/{start}--results.txt"
+ruta_archivo = f"./results/{start}--results.csv"
 
-# Abre el archivo en modo de escritura
-with open(ruta_archivo, "w") as f:
-    # Escribe el mensaje sobre el mejor modelo
-    f.write(
-        f"\nEl mejor modelo se guardó en: {mejor_modelo_path} con una pérdida de validación mínima de: {mejor_val_loss}\n"
-    )
+# Crear un DataFrame con los resultados
+df_resultados = pd.DataFrame([
+    {
+        "Prueba": resultado['Prueba'],
+        "Parametros": resultado['Parametros'],
+        "Ruta del modelo": f"./best_models/{start}--model_{resultado['Prueba']}.keras",
+        "MAE": resultado['MAE'],
+        "MSE": resultado['MSE'],
+        "RMSE": resultado['RMSE']
+    }
+    for resultado in resultados
+])
 
-    # Escribe los resultados de cada prueba
-    for resultado in resultados:
-        f.write(f"\nPrueba {resultado['Prueba']} - {resultado['Parametros']}\n")
-        f.write(f"\n Ruta ./best_models/{start}--model_{resultado['Prueba']}.keras\n")
-        f.write(
-            f"MAE: {resultado['MAE']}, MSE: {resultado['MSE']}, RMSE: {resultado['RMSE']}\n"
-        )
+# Guardar el DataFrame en un archivo CSV
+df_resultados.to_csv(ruta_archivo, index=False)
 
 # Confirma que se guardó correctamente
 print(f"Los resultados se han guardado en: {ruta_archivo}")
