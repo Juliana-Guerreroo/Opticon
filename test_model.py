@@ -13,7 +13,7 @@ df_test = pd.read_csv('./csv/Concretetest.csv', delimiter=';')
 df_test = df_test.dropna(axis=0, how='any')
 
 # Asegúrate de que la columna de ResistenciaConvertida no tenga ceros
-df_test = df_test[df_test['ResistenciaConvertida'] != 0]
+# df_test = df_test[df_test['ResistenciaConvertida'] != 0]
 
 # Seleccionar las características relevantes para la predicción
 caracteristicas = [

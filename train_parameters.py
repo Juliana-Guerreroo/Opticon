@@ -8,6 +8,7 @@ from datetime import datetime
 import os
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import random
+import itertools
 
 # Cargar y preparar los datos
 start = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -48,23 +49,45 @@ os.makedirs("./results", exist_ok=True)
 modelo_base = tf.keras.models.load_model('./best_models/2024-11-01_10-19-53--model_37.keras')
 
 # Hiperparámetros para la prueba
+# Valores de cada parámetro
+epochs_values = [300,350,400]
+learning_rate_values = [0.0005, 0.001, 0.002]
+layers_values = [
+    [512, 256, 128, 64],
+    [2048, 1024, 512, 256],
+    [1024, 512, 256, 128],
+]
+dropout_values = [None,0.1, 0.2, 0.3]
+batch_norm_values = [True, False]
+patience_values = range(20, 31)
+lr_reduction_patience_values = range(10, 16)
+reduce_factor_values = [0.1, 0.2, 0.3]
+batch_size_values = [40, 50,60]
+
+# Generar todas las combinaciones de parámetros
 parametros = [
     {
-        "epochs": np.random.choice([300, 350, 400]),
-        "learning_rate": np.random.choice([0.001, 0.002, 0.0005]),
-        "layers": random.choice([
-            [1024, 512, 256, 128], 
-            [512, 256, 128, 64], 
-            [2048, 1024, 512, 256]
-        ]),
-        "dropout": np.random.choice([0.1, 0.2, 0.3]),
-        "batch_norm": True,
-        "patience": np.random.choice(np.arange(20, 31)),
-        "lr_reduction_patience": np.random.choice(np.arange(10, 16)),
-        "reduce_factor": np.random.choice([0.1, 0.2, 0.3]),
-        "batch_size": np.random.choice([40, 50, 60])
+        "epochs": e,
+        "learning_rate": lr,
+        "layers": l,
+        "dropout": d,
+        "batch_norm": bn,
+        "patience": p,
+        "lr_reduction_patience": lrp,
+        "reduce_factor": rf,
+        "batch_size": bs,
     }
-    for _ in range(50)
+    for e, lr, l, d, bn, p, lrp, rf, bs in itertools.product(
+        epochs_values,
+        learning_rate_values,
+        layers_values,
+        dropout_values,
+        batch_norm_values,
+        patience_values,
+        lr_reduction_patience_values,
+        reduce_factor_values,
+        batch_size_values,
+    )
 ]
 
 # Configuración para almacenar métricas de rendimiento
@@ -157,13 +180,20 @@ for resultado in resultados:
 
 # Guardar resultados en archivo CSV
 ruta_archivo = f"./results/{start}--results.csv"
-df_resultados = pd.DataFrame([{
-    "Prueba": resultado['Prueba'],
-    "Ruta del modelo": f"./best_models/{start}--model_{resultado['Prueba']}.keras",
-    "MAE": resultado['MAE'],
-    "MSE": resultado['MSE'],
-    "RMSE": resultado['RMSE'],
-    **resultado['Parametros'],
-} for resultado in resultados])
+
+# Crear un DataFrame con los resultados
+df_resultados = pd.DataFrame([
+    {
+        "Prueba": resultado['Prueba'],
+        "MAE": resultado['MAE'],
+        "MSE": resultado['MSE'],
+        "RMSE": resultado['RMSE'],
+        "Ruta del modelo": f"./best_models/{start}--model_{resultado['Prueba']}.keras",
+        **resultado['Parametros']  # Descomponer los parámetros en columnas
+    }
+    for resultado in resultados
+])
+
+# Guardar el DataFrame en un archivo CSV
 df_resultados.to_csv(ruta_archivo, index=False)
 print(f"Los resultados se han guardado en: {ruta_archivo}")

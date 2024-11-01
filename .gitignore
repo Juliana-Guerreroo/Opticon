@@ -174,3 +174,7 @@ test.txt
 #csv
 csv/ConcretetestVoid.csv
 csv/ConcretetestVoidFill.csv
+
+#train
+train_parameters.py
+test_model.py
