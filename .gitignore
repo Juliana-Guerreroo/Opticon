@@ -166,3 +166,11 @@ best_models/
 images/
 predictions/
 results/
+
+# for test
+test.py
+test.txt
+
+#csv
+csv/ConcretetestVoid.csv
+csv/ConcretetestVoidFill.csv
