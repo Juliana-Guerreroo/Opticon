@@ -39,51 +39,32 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_scaled, y_scaled, test_size=0.2, random_state=42
 )
 
-# Crear una carpeta para guardar los modelos
+# Crear carpetas para guardar modelos, gráficas y resultados
 os.makedirs("./best_models", exist_ok=True)
-# Crear una carpeta para guardar las graficas
 os.makedirs("./images", exist_ok=True)
-
-# Crear una carpeta para guardar los resultados
 os.makedirs("./results", exist_ok=True)
 
+# Cargar el modelo base (modelo_527)
+modelo_base = tf.keras.models.load_model('./best_models/2024-11-01_10-19-53--model_37.keras')
 
 # Hiperparámetros para la prueba
 parametros = [
     {
-        "epochs": np.random.choice([100, 150, 200, 250, 300, 400]),
-        "learning_rate": np.random.choice([0.001, 0.005, 0.01, 0.0001, 0.0005, 0.002]),
-        "layers": random.choice(
-            [
-                [1024, 512, 256],
-                [512, 256, 128],
-                [256, 128, 64, 32],
-                [1024, 512, 256, 128, 64, 32, 16, 8],
-                [2048, 1024, 512],
-                [128, 64],
-                [512, 256, 128, 64],
-                [256, 128, 64, 32, 16],
-                [1024, 512, 256, 128],
-                [256, 128, 64, 32, 16, 8, 4],
-                [512, 256, 128, 64, 32],
-                [128, 64, 32, 16, 8],
-                [2048, 1024, 512, 256],
-                [256, 128],
-                [512, 256, 128, 64, 32, 16],
-            ]
-        ),
-        "dropout": np.random.choice([None, 0.1, 0.2, 0.3, 0.4, 0.5]),
-        "batch_norm": np.random.choice([True, False]),
-        "patience": np.random.choice(np.arange(5, 51)),  # Paciencia para EarlyStopping
-        "lr_reduction_patience": np.random.choice(
-            np.arange(5, 20)
-        ),  # Paciencia para reducción de LR
-        "reduce_factor": np.random.choice(
-            np.arange(0.1, 0.6, 0.1)
-        ),  # Factor de reducción de LR
-        "batch_size": np.random.choice(np.arange(20,101,20))
+        "epochs": np.random.choice([300, 350, 400]),
+        "learning_rate": np.random.choice([0.001, 0.002, 0.0005]),
+        "layers": random.choice([
+            [1024, 512, 256, 128], 
+            [512, 256, 128, 64], 
+            [2048, 1024, 512, 256]
+        ]),
+        "dropout": np.random.choice([0.1, 0.2, 0.3]),
+        "batch_norm": True,
+        "patience": np.random.choice(np.arange(20, 31)),
+        "lr_reduction_patience": np.random.choice(np.arange(10, 16)),
+        "reduce_factor": np.random.choice([0.1, 0.2, 0.3]),
+        "batch_size": np.random.choice([40, 50, 60])
     }
-    for _ in range(1)
+    for _ in range(50)
 ]
 
 # Configuración para almacenar métricas de rendimiento
@@ -94,8 +75,11 @@ mejor_modelo_path = None
 for idx, params in enumerate(parametros):
     print(f"\nPrueba {idx + 1} con parámetros: {params}")
 
-    # Crear el modelo
-    model = tf.keras.Sequential([tf.keras.Input(shape=(X_train.shape[1],))])
+    # Clonar el modelo base
+    model = tf.keras.models.clone_model(modelo_base)
+    model.set_weights(modelo_base.get_weights())
+
+    # Ajustar hiperparámetros en capas adicionales
     for layer_size in params["layers"]:
         model.add(tf.keras.layers.Dense(layer_size, activation="relu"))
         if params["batch_norm"]:
@@ -128,7 +112,7 @@ for idx, params in enumerate(parametros):
         epochs=params["epochs"],
         validation_split=0.2,
         callbacks=[checkpoint, early_stopping, lr_reduction],
-        batch_size = params["batch_size"]
+        batch_size=params["batch_size"]
     )
 
     # Cargar el mejor modelo guardado
@@ -139,9 +123,7 @@ for idx, params in enumerate(parametros):
     predicciones = scaler_y.inverse_transform(predicciones_scaled)
 
     # Calcular métricas
-    y_test_real = scaler_y.inverse_transform(
-        y_test
-    )  # Invertir la escala de y_test para compararlo con predicciones
+    y_test_real = scaler_y.inverse_transform(y_test)
     mae = mean_absolute_error(y_test_real, predicciones)
     mse = mean_squared_error(y_test_real, predicciones)
     rmse = np.sqrt(mse)
@@ -168,34 +150,20 @@ for idx, params in enumerate(parametros):
     plt.clf()
 
 # Mostrar resultados
-print(
-    f"\nEl mejor modelo se guardó en: {mejor_modelo_path} con una pérdida de validación mínima de: {mejor_val_loss}"
-)
+print(f"\nEl mejor modelo se guardó en: {mejor_modelo_path} con una pérdida de validación mínima de: {mejor_val_loss}")
 for resultado in resultados:
     print(f"\nPrueba {resultado['Prueba']} - {resultado['Parametros']}")
-    print(
-        f"MAE: {resultado['MAE']}, MSE: {resultado['MSE']}, RMSE: {resultado['RMSE']}"
-    )
+    print(f"MAE: {resultado['MAE']}, MSE: {resultado['MSE']}, RMSE: {resultado['RMSE']}")
 
-
-# Define la ruta del archivo donde se guardará la salida
+# Guardar resultados en archivo CSV
 ruta_archivo = f"./results/{start}--results.csv"
-
-# Crear un DataFrame con los resultados
-df_resultados = pd.DataFrame([
-    {
-        "Prueba": resultado['Prueba'],
-        "Parametros": resultado['Parametros'],
-        "Ruta del modelo": f"./best_models/{start}--model_{resultado['Prueba']}.keras",
-        "MAE": resultado['MAE'],
-        "MSE": resultado['MSE'],
-        "RMSE": resultado['RMSE']
-    }
-    for resultado in resultados
-])
-
-# Guardar el DataFrame en un archivo CSV
+df_resultados = pd.DataFrame([{
+    "Prueba": resultado['Prueba'],
+    "Ruta del modelo": f"./best_models/{start}--model_{resultado['Prueba']}.keras",
+    "MAE": resultado['MAE'],
+    "MSE": resultado['MSE'],
+    "RMSE": resultado['RMSE'],
+    **resultado['Parametros'],
+} for resultado in resultados])
 df_resultados.to_csv(ruta_archivo, index=False)
-
-# Confirma que se guardó correctamente
 print(f"Los resultados se han guardado en: {ruta_archivo}")

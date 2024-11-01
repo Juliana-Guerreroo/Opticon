@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from datetime import datetime
 
 # Cargar el modelo
-model_path = "./best_models/2024-10-31_12-19-47--model_1.keras"  # Reemplaza <timestamp> con la parte correspondiente del nombre del archivo
+model_path = "./best_models/2024-11-01_10-19-53--model_37.keras"  # Reemplaza <timestamp> con la parte correspondiente del nombre del archivo
 model = tf.keras.models.load_model(model_path)
 
 # Cargar los datos de entrada para las predicciones
