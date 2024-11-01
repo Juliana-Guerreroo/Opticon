@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import shutil
-import datetime
+from datetime import datetime
 
 file_path_result = 'results'
 file_path_models = 'best_models'
@@ -13,7 +13,7 @@ if os.path.exists(file_path_result):
     for file in os.listdir(file_path_result):
         if os.path.isfile(os.path.join(file_path_result,file)):
             df = pd.read_csv(os.path.join(file_path_result,file))
-            df = df[df["MAE"] <= 55]
+            df = df[df["MAE"] <= 46]
             best_models.extend(df['Ruta del modelo'].astype(str).tolist())  # Convertir a lista de strings
             
         
