@@ -9,7 +9,7 @@ import glob
 
 # Configuración de rutas y archivo de salida
 carpeta_modelos = "./best_models"
-ruta_archivo_resultados = f"./results/results_all_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv"
+ruta_archivo_resultados = f"./results/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}--results_all.csv"
 os.makedirs("./results", exist_ok=True)
 
 # Cargar los datos de prueba

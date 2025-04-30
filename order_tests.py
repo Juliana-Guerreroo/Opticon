@@ -6,15 +6,16 @@ from datetime import datetime
 file_path_result = 'results'
 file_path_models = 'best_models'
 file_path_images = 'images'
+filer_mae = 40
 best_models=[]
 
 # Leer archivos en 'results' y llenar la lista de mejores modelos
 if os.path.exists(file_path_result):
     for file in os.listdir(file_path_result):
         if os.path.isfile(os.path.join(file_path_result,file)):
-            df = pd.read_csv(os.path.join(file_path_result,file))
-            df = df[df["MAE"] <= 46]
-            best_models.extend(df['Ruta del modelo'].astype(str).tolist())  # Convertir a lista de strings
+            df = pd.read_csv(os.path.join(file_path_result,file),delimiter=";")
+            df = df[df["MAE"] <= filer_mae]
+            best_models.extend(df['Model_Path'].astype(str).tolist())  # Convertir a lista de strings
             
         
 # Convertir las rutas relativas de best_models a rutas absolutas

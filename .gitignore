@@ -1,3 +1,15 @@
+# Ignorar archivos grandes
+csv/simulated_concrete_data.csv
+*.zip
+*.rar
+*.7z
+*.tar
+*.bak
+*.tmp
+.DS_Store
+*.log
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
