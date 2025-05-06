@@ -137,8 +137,7 @@ GROUP BY
     [aggregate1_name], [aggregate2_name], [aggregate3_name], [aggregate4_name], [aggregate5_name], 
 	[cement1_name], [cement2_name], [cement3_name],
     [admixture1_name], [admixture2_name], [admixture3_name], [admixture4_name], [admixture5_name]
-ORDER BY 
-    [mixCode];
+;
 
 """
 df = pd.read_sql(query, engine)

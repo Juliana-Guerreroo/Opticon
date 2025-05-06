@@ -1,4 +1,4 @@
--- Eliminar las claves foráneas de las tablas que dependen de otras
+-- Eliminar las claves forï¿½neas de las tablas que dependen de otras
 
 -- tblMixer
 IF EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK__tblMixer__mixerConditionId]'))
@@ -170,10 +170,10 @@ END
 
 CREATE TABLE tblBuilding(
 buildingId UNIQUEIDENTIFIER,
-locatiónId UNIQUEIDENTIFIER,
+locationId UNIQUEIDENTIFIER,
 cureConcrete decimal(18,2),
 PRIMARY KEY (buildingId),
---FOREIGN KEY (locatiónId) REFERENCES CONCRETO4_TRUE.dbo.tblLocation(locationId)
+--FOREIGN KEY (locationId) REFERENCES CONCRETO4_TRUE.dbo.tblLocation(locationId)
 );
 
 CREATE TABLE tblMixerBuilding(
@@ -208,7 +208,7 @@ PRIMARY KEY (mixtype)
 CREATE TABLE tblPlant(
 plantId UNIQUEIDENTIFIER,
 locationPlant nvarchar(50),
-mixingTime decimal(18,2)
+mixingTime decimal(18,2),
 PRIMARY KEY (plantId)
 );
 
@@ -252,7 +252,7 @@ quantity decimal(18,2),
 finesse decimal(18,2),
 resistanceUniformity decimal(18,2),
 hardeningProperties decimal(18,2),
-waterContent decimal(18,2)
+waterContent decimal(18,2),
 PRIMARY KEY (cementId),
 FOREIGN KEY (cementTypeId) REFERENCES tblCementType(cementTypeId),
 FOREIGN KEY (cementCompositionId) REFERENCES tblCementComposition(cementCompositionId)
@@ -268,9 +268,9 @@ FOREIGN KEY (concreteId) REFERENCES tblConcrete(concreteId)
 );
 
 CREATE TABLE tblAggregatedType(
-aggrgatedTypeId UNIQUEIDENTIFIER,
+aggregatedTypeId UNIQUEIDENTIFIER,
 name nvarchar(50),
-PRIMARY KEY (aggrgatedTypeId)
+PRIMARY KEY (aggregatedTypeId)
 );
 
 CREATE TABLE tblAggregatedShape(
@@ -290,9 +290,9 @@ hardnees decimal(18,2),
 size decimal(18,2),
 gradation decimal(18,2),
 granulometry decimal(18,2),
-Absorption decimal(18,2)
+Absorption decimal(18,2),
 PRIMARY KEY (aggregatedId),
-FOREIGN KEY (aggregatedTypeId) REFERENCES tblAggregatedType(aggrgatedTypeId),
+FOREIGN KEY (aggregatedTypeId) REFERENCES tblAggregatedType(aggregatedTypeId),
 FOREIGN KEY (aggregatedShapeId) REFERENCES tblAggregatedShape(aggregatedShapeId)
 );
 
@@ -307,7 +307,7 @@ FOREIGN KEY (concreteId) REFERENCES tblConcrete(concreteId)
 
 CREATE TABLE tblAggregatedTexture(
 aggregatedTextureId UNIQUEIDENTIFIER,
-name nvarchar(50)
+name nvarchar(50),
 PRIMARY KEY (aggregatedTextureId)
 );
 
@@ -324,7 +324,7 @@ quantity decimal(18,2),
 settingeffect bit,
 hardeningeffect bit,
 PRIMARY KEY (additiveId),
-FOREIGN KEY (additiveTypeId) REFERENCES tblAdditiveType(additiveTypeId),
+FOREIGN KEY (additiveTypeId) REFERENCES tblAdditiveType(additiveTypeId)
 );
 
 CREATE TABLE tblAdditiveConcrete(
@@ -333,5 +333,5 @@ additiveId UNIQUEIDENTIFIER,
 concreteId UNIQUEIDENTIFIER,
 PRIMARY KEY (additiveConcrete),
 FOREIGN KEY (additiveId) REFERENCES tblAdditive(additiveId),
-FOREIGN KEY (concreteId) REFERENCES tblConcrete(concreteId),
+FOREIGN KEY (concreteId) REFERENCES tblConcrete(concreteId)
 );
